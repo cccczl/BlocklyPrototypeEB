@@ -28,18 +28,48 @@ goog.provide('Blockly.JavaScript.test');
 
 goog.require('Blockly.JavaScript');
 
-Blockly.JavaScript['test_apiCall'] = function(block) {
-	var url = Blockly.JavaScript.valueToCode(block, 'URL',
-        Blockly.JavaScript.ORDER_NONE);
-		
+Blockly.JavaScript['test_wait'] = function(block) {
+	var duration = Blockly.JavaScript.valueToCode(block, 'DURATION',
+        Blockly.JavaScript.ORDER_NONE) || '0';
+	
+	var commandUrl = '\'' + 'http://localhost:1337/Wait/' + duration + '?format=json\'';	
+	
 	var functionName = Blockly.JavaScript.provideFunction_(
-	'test_apiCall',
-	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(url) {',
-		'var req = new XMLHttpRequest();',
-		'req.open("get", , true);',
-		'req.send();',
+	'apiCall',
+	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
+			'httpRequest = new XMLHttpRequest();',
+			'httpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
+			'httpRequest.send();',
 		'}'
 	]);
-	var code = functionName + '(' + url + ')';
-	return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+	
+	var code = 	'var guidResponse = apiCall(' + duration + ');\n';  
+	return code;
+};
+
+Blockly.JavaScript['test_apiCall'] = function(block) {
+	var url = Blockly.JavaScript.valueToCode(block, 'URL',
+        Blockly.JavaScript.ORDER_NONE) || '\'\'';
+	var urlLength = url.length;	
+		
+	var withoutQuotes = url.substring(1, urlLength - 1);	
+	var fullUrl = '\'' + 'http://' + withoutQuotes + '\'';	
+		
+	var functionName = Blockly.JavaScript.provideFunction_(
+	'apiCall',
+	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(url, httpRequest) {',
+		'if(!httpRequest) {',
+			'httpRequest = new XMLHttpRequest();',
+			'httpRequest.open("get", url, true);',
+			'httpRequest.send();',
+		'} else if (httpRequest.readyState === 4) {',
+			'var response = httpRequest.responseText;',
+			'alert(response);',
+			'return response;',			
+		'}',
+		Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(\'\', httpRequest);',
+		'};'
+	]);
+	var code = functionName + '(' + fullUrl + ', null);\n';
+	return code;
 };
