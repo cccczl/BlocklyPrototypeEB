@@ -8,6 +8,8 @@
   <script src="../../blocks_compressed.js"></script>
   <script src="../../javascript_compressed.js"></script>
   <script src="../../msg/js/en.js"></script>
+  <script src="../../blocks/test.js"></script>
+  <script src="../../generators/javascript/test.js"></script>
   <style>
     body {
       background-color: #fff;
@@ -104,6 +106,10 @@
       <block type="text_length"></block>
       <block type="text_print"></block>
     </category>
+	<category name="Test">
+      <block type="test_apiCall"></block>
+	  <block type="test_wait"></block>
+    </category>
   </xml>
 
   <xml id="startBlocks" style="display: none">
@@ -152,6 +158,8 @@
           </value>
         </block>
       </statement>
+			<next><block type="test_wait" id="15" inline="false"><value name="DURATION"><block type="math_number" id="19"><field name="NUM">5</field></block></value></block></next>
+    </next>
     </block>
   </xml>
 
@@ -171,7 +179,7 @@
     function runCode() {
       // Generate JavaScript code and run it.
       window.LoopTrap = 1000;
-      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = 
           'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
       var code = Blockly.JavaScript.workspaceToCode();
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
@@ -188,7 +196,17 @@
 		var data = Blockly.Xml.domToText(xml);
 		alert(data);
 		
-		// todo - figure out how to write to file
+		var fd = new FormData();
+		fd.append("XmlData", data);
+		fd.append("ProjectName", "testName");
+		
+		var request = new XMLHttpRequest();
+		request.onload = function(e) {
+			var response = request.response;
+			alert(response);
+		}
+		request.open("post", "http://localhost:1337/ExperimentBuilder/Save");
+        request.send(fd);
 	}
   </script>
 
