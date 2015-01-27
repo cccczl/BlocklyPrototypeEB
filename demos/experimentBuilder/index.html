@@ -25,7 +25,7 @@
   <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
     <a href="../index.html">Demos</a> &gt; Experiment Builder</h1>
 
-  <p>This is a simple test for experiment builder.</p>
+  <p id="projectName"></p>
 
   <p>
     <button onclick="showCode()">Show JavaScript</button>
@@ -168,7 +168,47 @@
         {toolbox: document.getElementById('toolbox')});
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
         document.getElementById('startBlocks'));
-
+		
+	document.getElementById('projectName').innerHtml = "testProject";	
+	// todo - test
+	// Start Polling functions here
+	//sendGetProjects();
+	//sendGetStatus();
+	
+	// todo - test	
+	function sendGetProjects() {
+		var request = new XMLHttpRequest();
+		request.open("get", "http://localhost:1337/ExperimentBuilder/GetProjects?format=json");
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			// todo do something with the response
+			var responseText = request.responseText;
+			
+			// Trigger the next poll
+			setTimeout(sendGetProjects, 3000);
+		};
+        request.send();
+	}
+	
+	// todo - test
+	function sendGetStatus() {
+		var request = new XMLHttpRequest();
+		request.open("get", "http://localhost:1337/ExperimentBuilder/Status?format=json");
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			// todo do something with the response
+			var responseText = request.responseText;
+			
+			// Trigger the next poll
+			setTimeout(sendGetStatus, 3000);
+		};
+        request.send();
+	}
+	
     function showCode() {
       // Generate JavaScript code and display it.
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null; 
@@ -190,6 +230,35 @@
       }
     }
 	
+	// todo - test
+	function loadXml() {
+		// Load Xml from file
+		var projectName = "testName";
+		
+		var request = new XMLHttpRequest();
+		request.open("get", "http://localhost:1337/ExperimentBuilder/Load/" + projectName + "?format=json");
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			
+			try {
+				var xml = Blockly.Xml.textToDom(request.responseText);
+			} catch (e) {
+				alert('Error parsing XML:\n' + e);
+				return;
+			}
+						
+			var count = Blockly.mainWorkspace.getAllBlocks().length;
+			if (count && confirm('Replace existing blocks?\n"Cancel" will merge.')) {
+				Blockly.mainWorkspace.clear();
+			}
+			
+			Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+		};
+        request.send();
+	}
+	
 	function saveXml() {
 		// Save Xml to a file from startBlocks
 		var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
@@ -200,6 +269,7 @@
 		fd.append("ProjectName", "testName");
 		
 		var request = new XMLHttpRequest();
+		request.open("post", "http://localhost:1337/ExperimentBuilder/Save?format=json");
 		request.onreadystatechange = function(e) {
 			if(request.readyState != 4) {
 				return;
@@ -207,8 +277,7 @@
 			// todo provide some kind of response text
 			var responseText = request.responseText;
 			alert(responseText);
-		}
-		request.open("post", "http://localhost:1337/ExperimentBuilder/Save?format=json");
+		};
         request.send(fd);
 	}
   </script>
