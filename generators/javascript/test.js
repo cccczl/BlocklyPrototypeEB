@@ -35,7 +35,7 @@ Blockly.JavaScript['test_wait'] = function(block) {
 	var commandUrl = '\'' + 'http://localhost:1337/Wait/' + duration + '?format=json\'';	
 	
 	var functionName = Blockly.JavaScript.provideFunction_(
-	'apiCall',
+	'executeWaitBlock',
 	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
 		'\thttpRequest = new XMLHttpRequest();',
 		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
@@ -50,7 +50,7 @@ Blockly.JavaScript['test_wait'] = function(block) {
 		'}'
 	]);
 	
-	var code = 	'var guidResponse = apiCall(' + duration + ');\n';  
+	var code = functionName + '(' + duration + ');\n';  
 	return code;
 };
 
