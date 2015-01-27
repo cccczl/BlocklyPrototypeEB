@@ -37,9 +37,16 @@ Blockly.JavaScript['test_wait'] = function(block) {
 	var functionName = Blockly.JavaScript.provideFunction_(
 	'apiCall',
 	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
-			'httpRequest = new XMLHttpRequest();',
-			'httpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
-			'httpRequest.send();',
+		'\thttpRequest = new XMLHttpRequest();',
+		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
+		'\thttpRequest.onreadystatechange = function(e) {',
+		'\t\tif(httpRequest.readyState != 4) {',
+		'\t\t\treturn;',
+		'\t\t}',
+		'\t\tvar responseText = httpRequest.responseText;',
+		'\t\t// todo - do something with the response text',
+		'\t}',
+		'\thttpRequest.send();',
 		'}'
 	]);
 	

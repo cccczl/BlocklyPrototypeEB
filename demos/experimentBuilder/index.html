@@ -171,7 +171,7 @@
 
     function showCode() {
       // Generate JavaScript code and display it.
-      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null; 
       var code = Blockly.JavaScript.workspaceToCode();
       alert(code);
     }
@@ -194,18 +194,21 @@
 		// Save Xml to a file from startBlocks
 		var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
 		var data = Blockly.Xml.domToText(xml);
-		alert(data);
 		
 		var fd = new FormData();
 		fd.append("XmlData", data);
 		fd.append("ProjectName", "testName");
 		
 		var request = new XMLHttpRequest();
-		request.onload = function(e) {
-			var response = request.response;
-			alert(response);
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			// todo provide some kind of response text
+			var responseText = request.responseText;
+			alert(responseText);
 		}
-		request.open("post", "http://localhost:1337/ExperimentBuilder/Save");
+		request.open("post", "http://localhost:1337/ExperimentBuilder/Save?format=json");
         request.send(fd);
 	}
   </script>
