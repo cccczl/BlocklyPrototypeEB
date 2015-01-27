@@ -45,7 +45,7 @@ Blockly.JavaScript['test_wait'] = function(block) {
 		'\t\t}',
 		'\t\tvar responseText = httpRequest.responseText;',
 		'\t\t// todo - do something with the response text',
-		'\t}',
+		'\t};',
 		'\thttpRequest.send();',
 		'}'
 	]);
