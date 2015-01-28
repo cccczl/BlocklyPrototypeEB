@@ -25,7 +25,7 @@
   <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
     <a href="../index.html">Demos</a> &gt; Experiment Builder</h1>
 
-  <p id="projectName"></p>
+  <p>Project Name: <a href='#' onclick='toggleRenameProject()'><b id="projectName">Untitled</b></a></p>
 
   <p>
     <button onclick="showCode()">Show JavaScript</button>
@@ -168,8 +168,8 @@
         {toolbox: document.getElementById('toolbox')});
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
         document.getElementById('startBlocks'));
-		
-	document.getElementById('projectName').innerHtml = "testProject";	
+
+	document.getElementById('projectName').innerHTML = 'testProject';	
 	// todo - test
 	// Start Polling functions here
 	//sendGetProjects();
@@ -255,6 +255,9 @@
 			}
 			
 			Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+			
+			//Update project name with the new project name
+			document.getElementById('projectName').innerHTML = projectName;	
 		};
         request.send();
 	}
@@ -264,9 +267,12 @@
 		var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
 		var data = Blockly.Xml.domToText(xml);
 		
+		toggleRenameProject();
+		var projectName = document.getElementById('projectName').innerHTML;
+		
 		var fd = new FormData();
 		fd.append("XmlData", data);
-		fd.append("ProjectName", "testName");
+		fd.append("ProjectName", projectName);
 		
 		var request = new XMLHttpRequest();
 		request.open("post", "http://localhost:1337/ExperimentBuilder/Save?format=json");
@@ -274,13 +280,62 @@
 			if(request.readyState != 4) {
 				return;
 			}
-			// todo provide some kind of response text
+			// todo tell the user the name of the project saved from response text
+			// todo tell the user save failed if it does
 			var responseText = request.responseText;
-			alert(responseText);
+			alert("Save Complete!");
 		};
         request.send(fd);
 	}
   </script>
 
+	<div id="renameProject">
+		<div>
+			<p>
+				Project Name: 
+				<input name="name" id="newName" size="30" type="text" value="test"/>
+			</p>
+			<button onclick="renameAndToggle()">OK</button>
+			<button onclick="toggleRenameProject()">Cancel</button>
+		</div>
+	</div>
+	<script>
+	function toggleRenameProject() {
+		var currentName = document.getElementById('projectName').innerHTML;
+		document.getElementById('newName').value = currentName;
+		
+		el = document.getElementById("renameProject");
+		el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+	}
+	
+	function renameAndToggle() {
+		var newName = document.getElementById('newName').value;
+		document.getElementById('projectName').innerHTML = newName;
+		
+		el = document.getElementById("renameProject");
+		el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+	}
+	</script>
+	<style>
+	#renameProject {
+     visibility: hidden;
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width:100%;
+     height:100%;
+     text-align:center;
+     z-index: 1000;
+	}
+	
+	#renameProject div {
+     width:300px;
+     margin: 100px auto;
+     background-color: #fff;
+     border:2px solid #000;
+     padding:15px;
+     text-align:center;
+	}
+</style>
 </body>
 </html>
