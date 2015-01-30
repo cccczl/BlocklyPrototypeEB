@@ -32,6 +32,8 @@ Blockly.Blocks['eb_start'] = {
   init: function() {
 	this.setHelpUrl('http://www.example.com/');
 	this.setColour(120);
+	this.appendDummyInput()
+        .appendField("START!");
     this.setNextStatement(true);
     this.setTooltip('');
   }
