@@ -170,26 +170,46 @@
 	
     function showCode() {
       // Generate JavaScript code and display it.
-      Blockly.JavaScript.INFINITE_LOOP_TRAP = null; 
-      var code = Blockly.JavaScript.workspaceToCode();
-      alert(code);
+		try {
+			Blockly.JavaScript.INFINITE_LOOP_TRAP = null; 
+			
+			TechDev['blockNumber'] = 0;
+			var code = Blockly.JavaScript.workspaceToCode();
+			
+			var methods = TechDev['methods'];
+			var numBlocks = TechDev['blockNumber'] - 1;
+			for (var i = 1; i <= numBlocks; i++) {
+				var call = '<<' + i + 'Call>>';
+				var method = methods[i + 'Call'];
+				code = code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
+			}
+			
+			alert(code);
+		} catch (e) {
+		alert(e);
+		}
     }
 
     function runCode() {
-      // Generate JavaScript code and run it.
-      window.LoopTrap = 1000;
-      Blockly.JavaScript.INFINITE_LOOP_TRAP = 
-          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
-      var code = Blockly.JavaScript.workspaceToCode();
-	  
-	  methods
-	  
-      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
-      try {
-        eval(code);
-      } catch (e) {
-        alert(e);
-      }
+		// Generate JavaScript code and run it.
+		window.LoopTrap = 1000;
+		Blockly.JavaScript.INFINITE_LOOP_TRAP = 
+			'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+		Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+		
+		TechDev['blockNumber'] = 0;
+		var code = Blockly.JavaScript.workspaceToCode();
+		
+		var methods = TechDev['methods'];
+		for (var i = 1; i <= methods.length; i++) {
+			code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
+		}	  
+		
+		try {
+			eval(code);
+		} catch (e) {
+			alert(e);
+		}
     }
 	
 	// todo - test

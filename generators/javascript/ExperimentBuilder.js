@@ -27,8 +27,8 @@
 goog.provide('Blockly.JavaScript.test');
 goog.require('Blockly.JavaScript');
 
-var blockNumber = 0;
-TechDev['methods'] = methods = {};
+TechDev['blockNumber'] = 0;
+TechDev['methods'] = {};
 
 function getNextBlocksCode(block) {
 	var nextBlock = block.getNextBlock();
@@ -42,13 +42,20 @@ function getNextBlocksCode(block) {
 }
 
 Blockly.JavaScript['eb_start'] = function(block) {
-	blockNumber++;
-	return "<<" + blockNumber + "Call>>";
+	TechDev['blockNumber']++;
+	return '<<' + TechDev['blockNumber'] + 'Call>>';
 };
 
 Blockly.JavaScript['eb_wait'] = function(block) {
+	var nextBlock = block.getNextBlock();
+	var nextCall = '<<' + (TechDev['blockNumber'] + 1) + 'Call>>';
+	
+	if(!nextBlock) {
+		nextCall = '';
+	}
+	
 	var functionName = Blockly.JavaScript.provideFunction_(
-	'block' + blockNumber + 'Method',
+	'block' + TechDev['blockNumber'] + 'Method',
 	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
 		'\thttpRequest = new XMLHttpRequest();',
 		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
@@ -58,7 +65,7 @@ Blockly.JavaScript['eb_wait'] = function(block) {
 		'\t\t}',
 		'\t\tvar responseText = httpRequest.responseText;',
 		'\t\t// todo - do something with the response text',
-		'\t\t<<' + (blockNumber + 1) + 'Call>>',
+		'\t\t' + nextCall,
 		'\t};',
 		'\thttpRequest.send();',
 		'}'
@@ -67,10 +74,8 @@ Blockly.JavaScript['eb_wait'] = function(block) {
 	var duration = Blockly.JavaScript.valueToCode(block, 'DURATION',
         Blockly.JavaScript.ORDER_NONE) || '0';
 	
-	var commandUrl = '\'' + 'http://localhost:1337/Wait/' + duration + '?format=json\'';	
+	TechDev['methods'][TechDev['blockNumber'] + 'Call'] = functionName + '(' + duration + ');\n';  
 	
-	methods[blockNumber + "Call"] = functionName + '(' + duration + ');\n';  
-	
-	blockNumber++;
-	return "";
+	TechDev['blockNumber']++;
+	return '';
 };
