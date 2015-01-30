@@ -28,26 +28,22 @@ goog.provide('Blockly.Blocks.test');
 
 goog.require('Blockly.Blocks');
 
-Blockly.Blocks['test_wait'] = {
+Blockly.Blocks['eb_start'] = {
+  init: function() {
+	this.setHelpUrl('http://www.example.com/');
+	this.setColour(120);
+    this.setNextStatement(true);
+    this.setTooltip('');
+  }
+};
+
+Blockly.Blocks['eb_wait'] = {
   init: function() {
 	this.setHelpUrl('http://www.example.com/');
 	this.setColour(290);
     this.appendValueInput("DURATION")
         .setCheck("Number")
         .appendField("Duration (sec): ");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setTooltip('');
-  }
-};
-
-Blockly.Blocks['test_apiCall'] = {
-  init: function() {
-	this.setHelpUrl('http://www.example.com/');
-	this.setColour(290);
-    this.appendValueInput("URL")
-        .setCheck("String")
-        .appendField("http://");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('');

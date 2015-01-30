@@ -25,17 +25,30 @@
 'use strict';
 
 goog.provide('Blockly.JavaScript.test');
-
 goog.require('Blockly.JavaScript');
 
-Blockly.JavaScript['test_wait'] = function(block) {
-	var duration = Blockly.JavaScript.valueToCode(block, 'DURATION',
-        Blockly.JavaScript.ORDER_NONE) || '0';
+var blockNumber = 0;
+TechDev['methods'] = methods = {};
+
+function getNextBlocksCode(block) {
+	var nextBlock = block.getNextBlock();
+	var nextBlocksCode = "";
+	if(nextBlock) {
+		var nextBlockCodeGenerator = Blockly.JavaScript[nextBlock.type];
+		nextBlocksCode = nextBlockCodeGenerator(nextBlock, true);
+	}
 	
-	var commandUrl = '\'' + 'http://localhost:1337/Wait/' + duration + '?format=json\'';	
-	
+	return nextBlocksCode;
+}
+
+Blockly.JavaScript['eb_start'] = function(block) {
+	blockNumber++;
+	return "<<" + blockNumber + "Call>>";
+};
+
+Blockly.JavaScript['eb_wait'] = function(block) {
 	var functionName = Blockly.JavaScript.provideFunction_(
-	'executeWaitBlock',
+	'block' + blockNumber + 'Method',
 	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
 		'\thttpRequest = new XMLHttpRequest();',
 		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
@@ -45,38 +58,19 @@ Blockly.JavaScript['test_wait'] = function(block) {
 		'\t\t}',
 		'\t\tvar responseText = httpRequest.responseText;',
 		'\t\t// todo - do something with the response text',
+		'\t\t<<' + (blockNumber + 1) + 'Call>>',
 		'\t};',
 		'\thttpRequest.send();',
 		'}'
 	]);
 	
-	var code = functionName + '(' + duration + ');\n';  
-	return code;
-};
-
-Blockly.JavaScript['test_apiCall'] = function(block) {
-	var url = Blockly.JavaScript.valueToCode(block, 'URL',
-        Blockly.JavaScript.ORDER_NONE) || '\'\'';
-	var urlLength = url.length;	
-		
-	var withoutQuotes = url.substring(1, urlLength - 1);	
-	var fullUrl = '\'' + 'http://' + withoutQuotes + '\'';	
-		
-	var functionName = Blockly.JavaScript.provideFunction_(
-	'apiCall',
-	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(url, httpRequest) {',
-		'if(!httpRequest) {',
-			'httpRequest = new XMLHttpRequest();',
-			'httpRequest.open("get", url, true);',
-			'httpRequest.send();',
-		'} else if (httpRequest.readyState === 4) {',
-			'var response = httpRequest.responseText;',
-			'alert(response);',
-			'return response;',			
-		'}',
-		Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(\'\', httpRequest);',
-		'};'
-	]);
-	var code = functionName + '(' + fullUrl + ', null);\n';
-	return code;
+	var duration = Blockly.JavaScript.valueToCode(block, 'DURATION',
+        Blockly.JavaScript.ORDER_NONE) || '0';
+	
+	var commandUrl = '\'' + 'http://localhost:1337/Wait/' + duration + '?format=json\'';	
+	
+	methods[blockNumber + "Call"] = functionName + '(' + duration + ');\n';  
+	
+	blockNumber++;
+	return "";
 };
