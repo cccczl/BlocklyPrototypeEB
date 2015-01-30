@@ -3,13 +3,18 @@
 <head>
   <meta charset="utf-8">
   <title>Blockly Demo: ExperimentBuilder</title>
+  <script>
+	var TechDev = { };
+  </script>
   <script src="/storage.js"></script>
   <script src="../../blockly_compressed.js"></script>
   <script src="../../blocks_compressed.js"></script>
   <script src="../../javascript_compressed.js"></script>
   <script src="../../msg/js/en.js"></script>
-  <script src="../../blocks/test.js"></script>
-  <script src="../../generators/javascript/test.js"></script>
+  <script src="../../blocks/ExperimentBuilder.js"></script>
+  <script src="../../generators/javascript/ExperimentBuilder.js">
+	TechDev = methods;
+  </script>
   <style>
     body {
       background-color: #fff;
@@ -107,60 +112,14 @@
       <block type="text_print"></block>
     </category>
 	<category name="Test">
-      <block type="test_apiCall"></block>
-	  <block type="test_wait"></block>
+      <block type="eb_start"></block>
+	  <block type="eb_wait"></block>
     </category>
   </xml>
 
   <xml id="startBlocks" style="display: none">
-    <block type="controls_if" inline="false" x="20" y="20">
-      <mutation else="1"></mutation>
-      <value name="IF0">
-        <block type="logic_compare" inline="true">
-          <field name="OP">EQ</field>
-          <value name="A">
-            <block type="math_arithmetic" inline="true">
-              <field name="OP">MULTIPLY</field>
-              <value name="A">
-                <block type="math_number">
-                  <field name="NUM">6</field>
-                </block>
-              </value>
-              <value name="B">
-                <block type="math_number">
-                  <field name="NUM">7</field>
-                </block>
-              </value>
-            </block>
-          </value>
-          <value name="B">
-            <block type="math_number">
-              <field name="NUM">42</field>
-            </block>
-          </value>
-        </block>
-      </value>
-      <statement name="DO0">
-        <block type="text_print" inline="false">
-          <value name="TEXT">
-            <block type="text">
-              <field name="TEXT">Don't panic</field>
-            </block>
-          </value>
-        </block>
-      </statement>
-      <statement name="ELSE">
-        <block type="text_print" inline="false">
-          <value name="TEXT">
-            <block type="text">
-              <field name="TEXT">Panic</field>
-            </block>
-          </value>
-        </block>
-      </statement>
-			<next><block type="test_wait" id="15" inline="false"><value name="DURATION"><block type="math_number" id="19"><field name="NUM">5</field></block></value></block></next>
-    </next>
-    </block>
+	<block type="eb_start" id="1" inline="false"></block>
+	<block type="eb_wait" id="2" inline="false"><value name="DURATION"><block type="math_number" id="19"><field name="NUM">5</field></block></value></block>
   </xml>
 
   <script>
@@ -222,6 +181,9 @@
       Blockly.JavaScript.INFINITE_LOOP_TRAP = 
           'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
       var code = Blockly.JavaScript.workspaceToCode();
+	  
+	  methods
+	  
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
       try {
         eval(code);
