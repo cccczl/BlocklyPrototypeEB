@@ -179,9 +179,8 @@
 			var methods = TechDev['methods'];
 			var numBlocks = TechDev['blockNumber'] - 1;
 			for (var i = 1; i <= numBlocks; i++) {
-				var call = '<<' + i + 'Call>>';
-				var method = methods[i + 'Call'];
 				code = code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
+				code = code.replace('<<' + i + 'PollingCall>>', methods[i + 'PollingCall']);
 			}
 			
 			alert(code);
@@ -202,7 +201,8 @@
 		
 		var methods = TechDev['methods'];
 		for (var i = 1; i <= methods.length; i++) {
-			code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
+			code = code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
+			code = code.replace('<<' + i + 'PollingCall>>', methods[i + 'PollingCall']);
 		}	  
 		
 		try {

@@ -30,17 +30,6 @@ goog.require('Blockly.JavaScript');
 TechDev['blockNumber'] = 0;
 TechDev['methods'] = {};
 
-function getNextBlocksCode(block) {
-	var nextBlock = block.getNextBlock();
-	var nextBlocksCode = "";
-	if(nextBlock) {
-		var nextBlockCodeGenerator = Blockly.JavaScript[nextBlock.type];
-		nextBlocksCode = nextBlockCodeGenerator(nextBlock, true);
-	}
-	
-	return nextBlocksCode;
-}
-
 Blockly.JavaScript['eb_start'] = function(block) {
 	TechDev['blockNumber']++;
 	return '<<' + TechDev['blockNumber'] + 'Call>>';
@@ -48,24 +37,47 @@ Blockly.JavaScript['eb_start'] = function(block) {
 
 Blockly.JavaScript['eb_wait'] = function(block) {
 	var nextBlock = block.getNextBlock();
-	var nextCall = '<<' + (TechDev['blockNumber'] + 1) + 'Call>>';
+	var nextCall = '<<' + (TechDev['blockNumber'] + 1) + 'Call>>';;
+	var pollingCall = 'block' + TechDev['blockNumber'] + 'PollingMethod(guid);';
 	
 	if(!nextBlock) {
-		nextCall = '';
+		nextCall = 'return;';
 	}
 	
-	var functionName = Blockly.JavaScript.provideFunction_(
+	var blockMethod = Blockly.JavaScript.provideFunction_(
 	'block' + TechDev['blockNumber'] + 'Method',
 	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(duration) {',		
 		'\thttpRequest = new XMLHttpRequest();',
-		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\' , true);',
+		'\thttpRequest.open("get", \'http://localhost:1337/Wait/\' + duration + \'?format=json\', true);',
 		'\thttpRequest.onreadystatechange = function(e) {',
 		'\t\tif(httpRequest.readyState != 4) {',
 		'\t\t\treturn;',
 		'\t\t}',
-		'\t\tvar responseText = httpRequest.responseText;',
-		'\t\t// todo - do something with the response text',
-		'\t\t' + nextCall,
+		'\t\tguid = httpRequest.responseText;',
+		'\t\t' + pollingCall,
+		'\t};',
+		'\thttpRequest.send();',
+		'}'
+	]);
+	
+	var pollingMethod = Blockly.JavaScript.provideFunction_(
+	'block' + TechDev['blockNumber'] + 'PollingMethod',
+	[	'function ' + Blockly.JavaScript.FUNCTION_NAME_PLACEHOLDER_ + '(guid) {',		
+		'\thttpRequest = new XMLHttpRequest();',
+		'\thttpRequest.open("get", "http://localhost:1337/ExperimentBuilder/" + guid + "?format=json", true);',
+		'\thttpRequest.onreadystatechange = function(e) {',
+		'\t\tif(httpRequest.readyState != 4) {',
+		'\t\t\treturn;',
+		'\t\t}',
+		'\t\tstate = httpRequest.responseText;',
+		'\t\tif (state == "Finished") {',
+		'\t\t\t' + nextCall,
+		'\t\t} else if (state == "Errored") {',
+		'\t\t\talert("An error occurred.");',
+		'\t\t\treturn;',
+		'\t\t} else {',
+		'\t\t\t' + pollingCall,
+		'\t\t}',
 		'\t};',
 		'\thttpRequest.send();',
 		'}'
@@ -74,7 +86,8 @@ Blockly.JavaScript['eb_wait'] = function(block) {
 	var duration = Blockly.JavaScript.valueToCode(block, 'DURATION',
         Blockly.JavaScript.ORDER_NONE) || '0';
 	
-	TechDev['methods'][TechDev['blockNumber'] + 'Call'] = functionName + '(' + duration + ');\n';  
+	TechDev['methods'][TechDev['blockNumber'] + "Call"] = blockMethod + '(' + duration + ');\n';  
+	TechDev['methods'][TechDev['blockNumber'] + "PollingCall"] = pollingMethod + '(guid);';  
 	
 	TechDev['blockNumber']++;
 	return '';
