@@ -182,8 +182,6 @@
           'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
       var code = Blockly.JavaScript.workspaceToCode();
 	  
-	  methods
-	  
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
       try {
         eval(code);
