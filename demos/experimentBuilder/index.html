@@ -113,7 +113,6 @@
     </category>
 	<category name="Test">
       <block type="eb_start"></block>
-	  <block type="eb_wait"></block>
     </category>
   </xml>
 
@@ -269,6 +268,13 @@
 		};
         request.send(fd);
 	}
+	
+	function getEbBlocks() {
+		var toolbox = document.getElementById('toolbox').innerHTML;
+		// get available blocks in the descriptor js file
+		// write those block names to the toolbox inner html.
+	}
+  
   </script>
 
 	<div id="renameProject">
