@@ -12,9 +12,7 @@
   <script src="../../javascript_compressed.js"></script>
   <script src="../../msg/js/en.js"></script>
   <script src="../../blocks/ExperimentBuilder.js"></script>
-  <script src="../../generators/javascript/ExperimentBuilder.js">
-	TechDev = methods;
-  </script>
+  <script src="../../generators/javascript/ExperimentBuilder.js"></script>
   <style>
     body {
       background-color: #fff;
@@ -111,27 +109,57 @@
       <block type="text_length"></block>
       <block type="text_print"></block>
     </category>
-	<category name="Test">
-      <block type="eb_start"></block>
-    </category>
+	
   </xml>
 
   <xml id="startBlocks" style="display: none">
 	<block type="eb_start" id="1" inline="false"></block>
-	<block type="eb_wait" id="2" inline="false"><value name="DURATION"><block type="math_number" id="19"><field name="NUM">5</field></block></value></block>
   </xml>
 
   <script>
-    Blockly.inject(document.getElementById('blocklyDiv'),
-        {toolbox: document.getElementById('toolbox')});
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
-        document.getElementById('startBlocks'));
+	getEbBlocks();
+	
+    
 
 	document.getElementById('projectName').innerHTML = 'testProject';	
 	// todo - test
 	// Start Polling functions here
 	//sendGetProjects();
 	//sendGetStatus();
+	
+	function getEbBlocks() {
+		// get available blocks in the descriptor js file
+		// write those block names to the toolbox inner html.
+		
+		var request = new XMLHttpRequest();
+		request.open("get", "http://localhost:1337/ExperimentBuilder/Blocks?format=json");
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			
+			var responseBlockNames = JSON.parse(request.responseText)['BlockNames'];
+			
+			var ebToolBoxString = 
+				'<category name="Test">\n' +
+				'<block type="eb_start"></block>\n';
+			
+			for(var i = 0; i < responseBlockNames.length; i++) {
+				ebToolBoxString = ebToolBoxString + '<block type="eb_' + responseBlockNames[i] + '"></block>\n';
+			}
+			
+			ebToolBoxString = ebToolBoxString + '</category>\n';
+			
+			var toolbox = document.getElementById('toolbox').innerHTML;
+			document.getElementById('toolbox').innerHTML = toolbox + ebToolBoxString;
+			
+			Blockly.inject(document.getElementById('blocklyDiv'),
+				{toolbox: document.getElementById('toolbox')});
+			Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
+				document.getElementById('startBlocks'));
+		};
+        request.send();
+	}
 	
 	// todo - test	
 	function sendGetProjects() {
@@ -141,8 +169,7 @@
 			if(request.readyState != 4) {
 				return;
 			}
-			// todo do something with the response
-			var responseText = request.responseText;
+			var blockNames = request.responseText;
 			
 			// Trigger the next poll
 			setTimeout(sendGetProjects, 3000);
@@ -199,7 +226,8 @@
 		var code = Blockly.JavaScript.workspaceToCode();
 		
 		var methods = TechDev['methods'];
-		for (var i = 1; i <= methods.length; i++) {
+		var numBlocks = TechDev['blockNumber'] - 1;
+		for (var i = 1; i <= numBlocks; i++) {
 			code = code.replace('<<' + i + 'Call>>', methods[i + 'Call']);
 			code = code.replace('<<' + i + 'PollingCall>>', methods[i + 'PollingCall']);
 		}	  
@@ -268,13 +296,6 @@
 		};
         request.send(fd);
 	}
-	
-	function getEbBlocks() {
-		var toolbox = document.getElementById('toolbox').innerHTML;
-		// get available blocks in the descriptor js file
-		// write those block names to the toolbox inner html.
-	}
-  
   </script>
 
 	<div id="renameProject">
