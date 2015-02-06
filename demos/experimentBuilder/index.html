@@ -257,11 +257,7 @@
 				return;
 			}
 						
-			var count = Blockly.mainWorkspace.getAllBlocks().length;
-			if (count && confirm('Replace existing blocks?\n"Cancel" will merge.')) {
-				Blockly.mainWorkspace.clear();
-			}
-			
+			Blockly.mainWorkspace.clear();
 			Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
 			
 			//Update project name with the new project name
@@ -275,7 +271,6 @@
 		var xml = Blockly.Xml.workspaceToDom(Blockly.getMainWorkspace());
 		var data = Blockly.Xml.domToText(xml);
 		
-		toggleRenameProject();
 		var projectName = document.getElementById('projectName').innerHTML;
 		
 		var fd = new FormData();
@@ -288,10 +283,9 @@
 			if(request.readyState != 4) {
 				return;
 			}
-			// todo tell the user the name of the project saved from response text
-			// todo tell the user save failed if it does
-			var responseText = request.responseText;
-			alert("Save Complete!");
+			
+			var message = JSON.parse(request.responseText)["Message"];
+			alert(message);
 		};
         request.send(fd);
 	}
