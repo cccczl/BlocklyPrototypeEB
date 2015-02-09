@@ -78,7 +78,7 @@
 </div>
   </p>
 
-  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+  <div id="blocklyDiv" style="height: 550px; width: 100%;"></div>
 
   <xml id="toolbox" style="display: none">
     <category name="Logic">
@@ -108,6 +108,10 @@
       <block type="text_length"></block>
       <block type="text_print"></block>
     </category>
+	<category name="EB">
+      <block type="eb_start"></block>
+      <block type="eb_Wait"></block>
+    </category>
 	
   </xml>
 
@@ -116,15 +120,40 @@
   </xml>
 
   <script>
-	getEbBlocks();
+	// getEbBlocks();
 	
-    
-
-	document.getElementById('projectName').innerHTML = 'testProject';	
+    Blockly.inject(document.getElementById('blocklyDiv'),
+		{toolbox: document.getElementById('toolbox')});
+	Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
+		document.getElementById('startBlocks'));
+		
 	// todo - test
 	// Start Polling functions here
+	getRunningBlock();
 	//sendGetProjects();
 	//sendGetStatus();
+	
+	function getRunningBlock() {
+		var request = new XMLHttpRequest();
+		request.open("get", "http://localhost:1337/ExperimentBuilder/RunningBlock?format=json");
+		request.onreadystatechange = function(e) {
+			if(request.readyState != 4) {
+				return;
+			}
+			
+			var runningBlockId = JSON.parse(request.responseText)['BlocklyAssignedId'];
+			
+			// 0 is returned if nothing is running
+			if(runningBlockId != "0") {
+				var runningBlock = Blockly.mainWorkspace.getBlockById(runningBlockId);
+				runningBlock.select();
+			}
+			
+			// Trigger the next poll
+			setTimeout(getRunningBlock, 1000);
+		};
+        request.send();
+	}
 	
 	function getEbBlocks() {
 		// get available blocks in the descriptor js file
@@ -196,6 +225,8 @@
     function showCode() {
       // Generate JavaScript code and display it.
 		try {
+			
+		
 			Blockly.JavaScript.INFINITE_LOOP_TRAP = null; 
 			
 			TechDev['blockNumber'] = 0;
@@ -215,6 +246,10 @@
     }
 
     function runCode() {
+		// Select start block
+		var startBlock = Blockly.mainWorkspace.getBlockById("1");
+		startBlock.select();
+	
 		// Generate JavaScript code and run it.
 		window.LoopTrap = 1000;
 		Blockly.JavaScript.INFINITE_LOOP_TRAP = 
