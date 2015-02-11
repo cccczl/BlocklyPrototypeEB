@@ -6,12 +6,13 @@
   <script>
 	var TechDev = { };
   </script>
-  <script src="../../blockly_compressed.js"></script>
+  <script src="../../blockly_uncompressed.js"></script>
   <script src="../../blocks_compressed.js"></script>
   <script src="../../javascript_compressed.js"></script>
   <script src="../../msg/js/en.js"></script>
   <script src="../../blocks/ExperimentBuilder.js"></script>
   <script src="../../generators/javascript/ExperimentBuilder.js"></script>
+  <script src="test.js"</script>
   <style>
     body {
       background-color: #fff;
@@ -129,7 +130,7 @@
 		
 	// todo - test
 	// Start Polling functions here
-	getRunningBlock();
+	//getRunningBlock();
 	//sendGetProjects();
 	//sendGetStatus();
 	
@@ -146,7 +147,8 @@
 			// 0 is returned if nothing is running
 			if(runningBlockId != "0") {
 				var runningBlock = Blockly.mainWorkspace.getBlockById(runningBlockId);
-				runningBlock.select();
+				if(runningBlock)
+					runningBlock.select();
 			}
 			
 			// Trigger the next poll
