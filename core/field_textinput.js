@@ -276,3 +276,10 @@ Blockly.FieldTextInput.nonnegativeIntegerValidator = function(text) {
   }
   return n;
 };
+
+Blockly.FieldTextInput.booleanValidator = function(text) {
+  if (text != 'true' && text != 'false') {
+    return null
+  }
+  return text;
+};
