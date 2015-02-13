@@ -32,7 +32,13 @@ TechDev['methods'] = {};
 
 Blockly.JavaScript['eb_start'] = function(block) {
 	TechDev['blockNumber']++;
-	return '<<' + TechDev['blockNumber'] + 'Call>>';
+	var blockId = block.id;
+	var returnArray = [
+		'var block = Blockly.mainWorkspace.getBlockById("' + blockId + '");',
+		'block.select();',
+		'<<' + TechDev['blockNumber'] + 'Call>>'
+	];
+	return returnArray.join('\n');
 };
 
 Blockly.JavaScript['eb_wait'] = function(block) {
