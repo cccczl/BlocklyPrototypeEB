@@ -6,7 +6,7 @@
   <script>
 	var TechDev = { };
   </script>
-  <script src="../../blockly_uncompressed.js"></script>
+  <script src="../../blockly_compressed.js"></script>
   <script src="../../blocks_compressed.js"></script>
   <script src="../../javascript_compressed.js"></script>
   <script src="../../msg/js/en.js"></script>
@@ -75,10 +75,9 @@
 		loadInput.addEventListener('change', loadFile, false);
 		document.getElementById('fakeload').onclick = function() { loadInput.click(); };
 	</script>
-</div>
   </p>
 
-  <div id="blocklyDiv" style="height: 550px; width: 100%;"></div>
+  <div id="blocklyDiv" style="height: 200px; width: 100%;"></div>
 
   <xml id="toolbox" style="display: none">
     <category name="Logic">
@@ -110,8 +109,7 @@
     </category>
 	<category name="EB">
       <block type="eb_start"></block>
-      <block type="eb_RunMatlabScript"></block>
-	  <block type="eb_MoveMotor"></block>
+      <block type="eb_wait"></block>
     </category>
 	
   </xml>
